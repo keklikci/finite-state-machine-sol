@@ -35,7 +35,7 @@ contract Validator {
     return Validation.Validate;
   }
 
-  function record(string memory _key) external {
+  function record(string calldata _key) external {
     require(validation == Validation.Idle, "Cannot propagate state to record data!");
     validator[_key] = keccak256(abi.encodePacked(_key));
     addKey(_key);
@@ -43,7 +43,7 @@ contract Validator {
     validation = transitionRecord();
   }
 
-  function addKey(string memory _key) internal {
+  function addKey(string calldata _key) internal {
     keystore.push(_key);
     indexer[_key] = keystore.length - 1;
   }
