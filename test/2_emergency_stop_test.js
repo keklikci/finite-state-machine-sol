@@ -106,6 +106,22 @@ contract(EmergencyStop, (accounts) => {
         const address = await deployed.getContractAddress();
         await deployed.withdraw();
         const balance = await deployed.getContractBalance();
-        console.log(`Contract balance (post withdrawal): ${balance}`);
+        assert.equal(balance.toString(), "0");
+        assert.ok(address);
+    });
+
+    it("should transfer funds during withdrawal", async () => {
+        const deployed = await EmergencyStop.deployed();
+        await deployed.resume();
+        await deployed.deposit({from: accounts[1], value: 10});
+        await deployed.pause();
+
+        const address = await deployed.getContractAddress();
+        const before = await web3.eth.getBalance(address);
+        await deployed.withdraw({from: accounts[0]});
+        const after = await web3.eth.getBalance(address);
+
+        assert.equal(web3.utils.toBN(before).sub(web3.utils.toBN(after)).toString(), "10");
+        assert.equal((await deployed.getContractBalance()).toString(), "0");
     });
 });

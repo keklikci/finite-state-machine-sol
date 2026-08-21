@@ -70,7 +70,9 @@ contract EmergencyStop {
     balances[address(this)] += msg.value;
   }
 
-  function withdraw() public onPause(execute) balanceCheck(0) payable {
+  function withdraw() public onPause(execute) balanceCheck(0) {
+    uint amount = balances[address(this)];
     balances[address(this)] = 0;
+    payable(msg.sender).transfer(amount);
   }
 }
